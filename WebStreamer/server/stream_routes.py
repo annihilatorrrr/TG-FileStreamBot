@@ -24,14 +24,16 @@ async def root_route_handler(_):
         {
             "server_status": "running",
             "uptime": utils.get_readable_time(time.time() - StartTime),
-            "telegram_bot": "@" + StreamBot.username,
+            "telegram_bot": f"@{StreamBot.username}",
             "connected_bots": len(multi_clients),
-            "loads": dict(
-                ("bot" + str(c + 1), l)
+            "loads": {
+                f"bot{str(c + 1)}": l
                 for c, (_, l) in enumerate(
-                    sorted(work_loads.items(), key=lambda x: x[1], reverse=True)
+                    sorted(
+                        work_loads.items(), key=lambda x: x[1], reverse=True
+                    )
                 )
-            ),
+            },
             "version": f"v{__version__}",
         }
     )
@@ -41,8 +43,9 @@ async def root_route_handler(_):
 async def stream_handler(request: web.Request):
     try:
         path = request.match_info["path"]
-        match = re.search(r"^([0-9a-f]{%s})(\d+)$" % (Var.HASH_LENGTH), path)
-        if match:
+        if match := re.search(
+            r"^([0-9a-f]{%s})(\d+)$" % (Var.HASH_LENGTH), path
+        ):
             secure_hash = match.group(1)
             message_id = int(match.group(2))
         else:

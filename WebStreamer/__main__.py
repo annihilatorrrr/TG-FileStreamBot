@@ -43,10 +43,10 @@ async def start_services():
     await server.setup()
     await web.TCPSite(server, Var.BIND_ADDRESS, Var.PORT).start()
     logging.info("Service Started")
-    logging.info("bot =>> {}".format(bot_info.first_name))
+    logging.info(f"bot =>> {bot_info.first_name}")
     if bot_info.dc_id:
-        logging.info("DC ID =>> {}".format(str(bot_info.dc_id)))
-    logging.info("URL =>> {}".format(Var.URL))
+        logging.info(f"DC ID =>> {str(bot_info.dc_id)}")
+    logging.info(f"URL =>> {Var.URL}")
     await idle()
 
 async def cleanup():

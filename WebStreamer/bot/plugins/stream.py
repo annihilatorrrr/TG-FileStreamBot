@@ -26,7 +26,11 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
     group=4,
 )
 async def media_receive_handler(_, m: Message):
-    if Var.ALLOWED_USERS and not ((str(m.from_user.id) in Var.ALLOWED_USERS) or (m.from_user.username in Var.ALLOWED_USERS)):
+    if (
+        Var.ALLOWED_USERS
+        and str(m.from_user.id) not in Var.ALLOWED_USERS
+        and m.from_user.username not in Var.ALLOWED_USERS
+    ):
         return await m.reply("You are not <b>allowed to use</b> this <a href='https://github.com/EverythingSuckz/TG-FileStreamBot'>bot</a>.", quote=True)
     log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
     file_hash = get_hash(log_msg, Var.HASH_LENGTH)
@@ -35,9 +39,7 @@ async def media_receive_handler(_, m: Message):
     logger.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
     try:
         await m.reply_text(
-            text="<code>{}</code>\n(<a href='{}'>shortened</a>)".format(
-                stream_link, short_link
-            ),
+            text=f"<code>{stream_link}</code>\n(<a href='{short_link}'>shortened</a>)",
             quote=True,
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
@@ -46,9 +48,7 @@ async def media_receive_handler(_, m: Message):
         )
     except errors.ButtonUrlInvalid:
         await m.reply_text(
-            text="<code>{}</code>\n\nshortened: {})".format(
-                stream_link, short_link
-            ),
+            text=f"<code>{stream_link}</code>\n\nshortened: {short_link})",
             quote=True,
             parse_mode=ParseMode.HTML,
         )
